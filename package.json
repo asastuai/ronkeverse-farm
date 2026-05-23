@@ -1,0 +1,15 @@
+{
+  "name": "ronkeverse-farm",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Ronkeverse Banana Plantations — farm game on Ronin",
+  "scripts": {
+    "dev": "pnpm --filter app dev",
+    "build": "pnpm --filter app build",
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test -vvv",
+    "contracts:deploy:saigon": "cd contracts && forge script script/Deploy.s.sol --rpc-url saigon --broadcast",
+    "contracts:deploy:ronin": "cd contracts && forge script script/Deploy.s.sol --rpc-url ronin --broadcast"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

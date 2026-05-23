@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="banana" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff08a"/>
+      <stop offset="60%" stop-color="#ffd83a"/>
+      <stop offset="100%" stop-color="#d8a91a"/>
+    </linearGradient>
+  </defs>
+  <path
+    d="M22 78 Q14 42 38 22 Q42 30 36 38 Q24 54 30 70 Q44 84 70 76 Q82 72 86 60 Q88 64 86 70 Q80 86 56 90 Q34 92 22 78 Z"
+    fill="url(#banana)"
+    stroke="#7a5a0a"
+    stroke-width="1.5"
+    stroke-linejoin="round"
+  />
+  <path d="M40 24 L42 14 L48 16 L46 24" fill="#3d2618"/>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100" fill="none">
+  <defs>
+    <linearGradient id="basket-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a87144"/>
+      <stop offset="100%" stop-color="#5a3a1a"/>
+    </linearGradient>
+  </defs>
+  <!-- canasta -->
+  <path d="M10 40 L20 90 L100 90 L110 40 Z" fill="url(#basket-grad)" stroke="#3d2618" stroke-width="2"/>
+  <!-- líneas de mimbre -->
+  <line x1="15" y1="55" x2="105" y2="55" stroke="#3d2618" stroke-width="1" opacity="0.5"/>
+  <line x1="17" y1="70" x2="103" y2="70" stroke="#3d2618" stroke-width="1" opacity="0.5"/>
+  <line x1="19" y1="85" x2="101" y2="85" stroke="#3d2618" stroke-width="1" opacity="0.5"/>
+  <!-- borde superior -->
+  <ellipse cx="60" cy="40" rx="50" ry="6" fill="#8b5a2b" stroke="#3d2618" stroke-width="2"/>
+  <!-- bananas adentro asomando -->
+  <path d="M30 30 Q24 18 36 14 Q42 22 42 32" fill="#ffd83a" stroke="#7a5a0a" stroke-width="1.5"/>
+  <path d="M55 28 Q50 12 64 10 Q70 20 68 32" fill="#fff08a" stroke="#7a5a0a" stroke-width="1.5"/>
+  <path d="M80 30 Q76 16 88 14 Q92 22 90 33" fill="#ffd83a" stroke="#7a5a0a" stroke-width="1.5"/>
+</svg>

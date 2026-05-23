@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280" fill="none">
+  <defs>
+    <linearGradient id="trunk" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5a3a1a"/>
+      <stop offset="50%" stop-color="#8b5a2b"/>
+      <stop offset="100%" stop-color="#3d2618"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3da856"/>
+      <stop offset="100%" stop-color="#1b6e3a"/>
+    </linearGradient>
+    <linearGradient id="banana-bunch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff08a"/>
+      <stop offset="60%" stop-color="#ffd83a"/>
+      <stop offset="100%" stop-color="#d8a91a"/>
+    </linearGradient>
+  </defs>
+
+  <!-- tronco -->
+  <rect x="92" y="110" width="16" height="170" rx="8" fill="url(#trunk)"/>
+  <path d="M100 130 Q104 160 100 200 Q96 230 100 270" stroke="#3d2618" stroke-width="1" fill="none" opacity="0.5"/>
+
+  <!-- hojas (palmera) -->
+  <g transform="translate(100, 100)">
+    <ellipse cx="-60" cy="-10" rx="55" ry="14" fill="url(#leaf)" transform="rotate(-25)"/>
+    <ellipse cx="60"  cy="-10" rx="55" ry="14" fill="url(#leaf)" transform="rotate(25)"/>
+    <ellipse cx="-30" cy="-40" rx="50" ry="12" fill="url(#leaf)" transform="rotate(-50)"/>
+    <ellipse cx="30"  cy="-40" rx="50" ry="12" fill="url(#leaf)" transform="rotate(50)"/>
+    <ellipse cx="0"   cy="-55" rx="14" ry="50" fill="url(#leaf)"/>
+    <circle cx="0" cy="0" r="10" fill="#3d2618"/>
+  </g>
+
+  <!-- racimo de bananas -->
+  <g transform="translate(100, 130)">
+    <path d="M-8 0 Q-18 12 -14 28 Q-8 32 0 28" stroke="#7a5a0a" stroke-width="1.5" fill="url(#banana-bunch)"/>
+    <path d="M0 0 Q-4 14 -2 30 Q4 34 8 30" stroke="#7a5a0a" stroke-width="1.5" fill="url(#banana-bunch)"/>
+    <path d="M8 0 Q14 14 14 30 Q12 34 4 32" stroke="#7a5a0a" stroke-width="1.5" fill="url(#banana-bunch)"/>
+    <circle cx="0" cy="0" r="3" fill="#3d2618"/>
+  </g>
+</svg>

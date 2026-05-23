@@ -1,0 +1,42 @@
+# deps
+node_modules/
+**/node_modules/
+
+# foundry
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+contracts/lib/
+
+# next
+app/.next/
+app/out/
+app/build/
+
+# env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+*.swp
+
+# coverage
+coverage/
+*.lcov
+
+# misc
+.turbo/
+.pnpm-store/

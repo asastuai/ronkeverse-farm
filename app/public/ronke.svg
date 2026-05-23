@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Ronke the Monke — silueta estilizada -->
+  <defs>
+    <radialGradient id="face" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#5cb4ff"/>
+      <stop offset="100%" stop-color="#3aa3ff"/>
+    </radialGradient>
+    <radialGradient id="snout" cx="50%" cy="60%" r="55%">
+      <stop offset="0%" stop-color="#a8d5ff"/>
+      <stop offset="100%" stop-color="#7bc0ff"/>
+    </radialGradient>
+  </defs>
+
+  <!-- orejas -->
+  <circle cx="40" cy="80" r="22" fill="url(#face)"/>
+  <circle cx="160" cy="80" r="22" fill="url(#face)"/>
+  <circle cx="40" cy="80" r="12" fill="#3aa3ff" opacity="0.7"/>
+  <circle cx="160" cy="80" r="12" fill="#3aa3ff" opacity="0.7"/>
+
+  <!-- cabeza -->
+  <ellipse cx="100" cy="100" rx="65" ry="62" fill="url(#face)"/>
+
+  <!-- hocico -->
+  <ellipse cx="100" cy="130" rx="38" ry="32" fill="url(#snout)"/>
+
+  <!-- ojos -->
+  <ellipse cx="78" cy="92" rx="9" ry="11" fill="#0b1d3a"/>
+  <ellipse cx="122" cy="92" rx="9" ry="11" fill="#0b1d3a"/>
+  <circle cx="81" cy="89" r="3" fill="#ffd83a"/>
+  <circle cx="125" cy="89" r="3" fill="#ffd83a"/>
+
+  <!-- nariz -->
+  <ellipse cx="100" cy="122" rx="5" ry="3" fill="#0b1d3a"/>
+  <ellipse cx="92" cy="120" rx="1.6" ry="2" fill="#0b1d3a"/>
+  <ellipse cx="108" cy="120" rx="1.6" ry="2" fill="#0b1d3a"/>
+
+  <!-- sonrisa -->
+  <path d="M82 142 Q100 156 118 142" stroke="#0b1d3a" stroke-width="3" stroke-linecap="round" fill="none"/>
+</svg>
