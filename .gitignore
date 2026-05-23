@@ -40,3 +40,7 @@ coverage/
 # misc
 .turbo/
 .pnpm-store/
+
+contracts/.git_backup/
+contracts/src/BananaToken.sol
+contracts/.gitmodules

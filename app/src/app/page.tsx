@@ -66,7 +66,12 @@ export default function Home() {
               RONKEVERSE FARM
             </span>
           </div>
-          <ConnectButton />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a href="/about" className="btn-secondary">
+              About
+            </a>
+            <ConnectButton />
+          </div>
         </nav>
 
         {/* hero */}
