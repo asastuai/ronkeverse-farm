@@ -229,14 +229,14 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ─── HERO TITLE (dramatic) ───────────────────────────────────────────── */
 .hero-title {
-  background: linear-gradient(180deg, #ffd83a 0%, #ffb800 40%, #3aa3ff 100%);
+  background: linear-gradient(180deg, #fff08a 0%, #ffd83a 30%, #ffb800 60%, #3aa3ff 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 32px rgba(255, 216, 58, 0.3));
+  filter: drop-shadow(0 0 40px rgba(255, 216, 58, 0.45));
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 0.9;
+  letter-spacing: -0.045em;
+  line-height: 0.88;
 }
 
 /* ─── SPARKLE DECORATIONS ─────────────────────────────────────────────── */
@@ -280,24 +280,21 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: 0;
   background: linear-gradient(to bottom, #1a3863 0%, #3aa3ff 60%, #1b6e3a 100%);
-  animation: rw-day-night 120s linear infinite;
+  animation: rw-day-night 180s linear infinite;
   z-index: 0;
 }
 @keyframes rw-day-night {
-  0% {
+  0%, 20% {
     background: linear-gradient(to bottom, #1a3863 0%, #3aa3ff 60%, #1b6e3a 100%);
   }
   35% {
-    background: linear-gradient(to bottom, #ff8866 0%, #ffd83a 50%, #1b6e3a 100%);
+    background: linear-gradient(to bottom, #ff8866 0%, #ffaa55 50%, #1b6e3a 100%);
   }
-  50% {
-    background: linear-gradient(to bottom, #2a1b5a 0%, #4a2c75 50%, #1a3a25 100%);
-  }
-  65% {
-    background: linear-gradient(to bottom, #06122a 0%, #1a3863 60%, #14552a 100%);
+  50%, 70% {
+    background: linear-gradient(to bottom, #1a0e3a 0%, #2a1b5a 50%, #0e3a1c 100%);
   }
   85% {
-    background: linear-gradient(to bottom, #ffaa66 0%, #ffd83a 50%, #1b6e3a 100%);
+    background: linear-gradient(to bottom, #ffaa66 0%, #ffcd5e 50%, #1b6e3a 100%);
   }
   100% {
     background: linear-gradient(to bottom, #1a3863 0%, #3aa3ff 60%, #1b6e3a 100%);
@@ -309,13 +306,13 @@ h1, h2, h3, h4, h5, h6 {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  animation: rw-stars-fade 120s linear infinite;
+  animation: rw-stars-fade 180s linear infinite;
   z-index: 1;
 }
 @keyframes rw-stars-fade {
-  0%, 30%   { opacity: 0; }
-  50%, 70%  { opacity: 1; }
-  90%, 100% { opacity: 0; }
+  0%, 40%   { opacity: 0; }
+  50%, 68%  { opacity: 1; }
+  78%, 100% { opacity: 0; }
 }
 .rwscene-star {
   position: absolute;
@@ -340,16 +337,15 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
   background: radial-gradient(circle, #fff08a 0%, #ffd83a 60%, transparent 80%);
   box-shadow: 0 0 50px rgba(255, 216, 58, 0.85);
-  animation: rw-sun-cycle 120s linear infinite;
+  animation: rw-sun-cycle 180s linear infinite;
   z-index: 2;
 }
 @keyframes rw-sun-cycle {
-  0%, 100% { opacity: 1; transform: translateY(0) scale(1); }
-  45%      { opacity: 1; transform: translateY(60px) scale(0.6); }
-  50%      { opacity: 0; transform: translateY(80px) scale(0.4); }
-  55%      { opacity: 0; transform: translateY(-40px) scale(0.4); }
-  60%      { opacity: 0; }
-  85%      { opacity: 1; transform: translateY(0) scale(1); }
+  0%, 35%  { opacity: 1; transform: translateY(0) scale(1); }
+  42%      { opacity: 0.3; transform: translateY(60px) scale(0.6); }
+  46%, 78% { opacity: 0; transform: translateY(100px) scale(0.3); }
+  88%      { opacity: 0.5; transform: translateY(30px) scale(0.7); }
+  100%     { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Moon — appears during night */
@@ -363,12 +359,12 @@ h1, h2, h3, h4, h5, h6 {
   background: radial-gradient(circle at 35% 35%, #f5f5f5 0%, #b3c4d4 60%, #6a7d92 100%);
   box-shadow: 0 0 40px rgba(180, 200, 230, 0.55), inset -8px -6px 12px rgba(60, 70, 95, 0.4);
   opacity: 0;
-  animation: rw-moon-cycle 120s linear infinite;
+  animation: rw-moon-cycle 180s linear infinite;
   z-index: 2;
 }
 @keyframes rw-moon-cycle {
-  0%, 35%, 85%, 100% { opacity: 0; transform: translateY(40px); }
-  50%, 70%           { opacity: 1; transform: translateY(0); }
+  0%, 48%, 82%, 100% { opacity: 0; transform: translateY(40px); }
+  52%, 78%           { opacity: 1; transform: translateY(0); }
 }
 
 .rwscene-cloud {
@@ -494,9 +490,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .rwscene-worker-banana {
   position: absolute;
-  top: -16px;
-  right: -10px;
-  font-size: 18px;
+  top: -18px;
+  right: -12px;
+  font-size: 22px;
   filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
   animation: rw-banana-jiggle 0.6s ease-in-out infinite;
 }
@@ -509,8 +505,8 @@ h1, h2, h3, h4, h5, h6 {
   animation: rw-walk-right 9s linear infinite, rw-bounce 0.5s ease-in-out infinite;
 }
 @keyframes rw-walk-right {
-  0%   { left: 14%; }
-  100% { left: 80%; }
+  0%   { left: 18%; }
+  100% { left: 78%; }
 }
 
 .rwscene-worker-2 {
@@ -519,8 +515,8 @@ h1, h2, h3, h4, h5, h6 {
   transform: scaleX(-1);
 }
 @keyframes rw-walk-left {
-  0%   { left: 80%; }
-  100% { left: 14%; }
+  0%   { left: 78%; }
+  100% { left: 18%; }
 }
 
 .rwscene-worker-3 {
@@ -531,8 +527,9 @@ h1, h2, h3, h4, h5, h6 {
   height: 40px;
 }
 
-/* Worker 4 — background, slower, smaller (parallax depth) */
+/* Worker 4 — background, slower, smaller (parallax depth). Hidden on mobile to reduce crowding. */
 .rwscene-worker-4 {
+  display: none;
   animation: rw-walk-left 16s linear infinite, rw-bounce 0.7s ease-in-out infinite;
   animation-delay: -3s;
   bottom: 56px;
@@ -542,8 +539,9 @@ h1, h2, h3, h4, h5, h6 {
   z-index: 2;
 }
 
-/* Worker 5 — far background, slower */
+/* Worker 5 — far background, slower. Hidden on mobile. */
 .rwscene-worker-5 {
+  display: none;
   animation: rw-walk-right 18s linear infinite, rw-bounce 0.8s ease-in-out infinite;
   animation-delay: -10s;
   bottom: 60px;
@@ -551,6 +549,10 @@ h1, h2, h3, h4, h5, h6 {
   height: 30px;
   opacity: 0.7;
   z-index: 2;
+}
+
+@media (min-width: 640px) {
+  .rwscene-worker-4, .rwscene-worker-5 { display: block; }
 }
 
 /* Speech bubbles */
@@ -594,6 +596,10 @@ h1, h2, h3, h4, h5, h6 {
 @keyframes rw-speech-pop {
   0%, 70%    { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.7); }
   10%, 60%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+.rwscene-speech-w4 {
+  animation-duration: 9.2s;
+  animation-delay: -3.5s;
 }
 
 /* Sparkle burst near basket — banana delivery effect */

@@ -62,7 +62,7 @@ export default function Home() {
         <nav className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3">
             <img src="/ronke.svg" alt="Ronke" className="h-8 w-8 sm:h-10 sm:w-10" />
-            <span className="text-xs font-semibold tracking-wide text-ronke-blue/80 sm:text-sm">
+            <span className="hidden text-xs font-semibold tracking-wide text-ronke-blue/80 sm:inline sm:text-sm">
               RONKEVERSE FARM
             </span>
           </div>
@@ -70,7 +70,7 @@ export default function Home() {
             <a href="/about" className="btn-secondary">
               About
             </a>
-            <ConnectButton />
+            {!isDemoMode && <ConnectButton />}
           </div>
         </nav>
 
@@ -89,7 +89,7 @@ export default function Home() {
           </div>
 
           <h1
-            className="hero-title reveal font-display text-5xl sm:text-8xl"
+            className="hero-title reveal font-display text-6xl sm:text-9xl"
             style={{ animationDelay: "0.15s" }}
           >
             Banana

@@ -114,15 +114,17 @@ export function DemoFarmDashboard() {
   return (
     <div className="space-y-4">
       {/* header demo */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex items-center gap-2 rounded-full border border-ronke-banana/40 bg-ronke-banana/10 px-3 py-1 text-xs font-medium text-ronke-banana">
-          🎮 DEMO MODE · state persisted in your browser, no chain
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-ronke-banana/30 bg-gradient-to-r from-ronke-banana/10 via-ronke-banana/5 to-transparent p-3 backdrop-blur">
+        <div className="flex items-center gap-2 text-xs font-medium text-ronke-banana sm:text-sm">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-ronke-banana shadow-banana" />
+          <span className="font-semibold">DEMO MODE</span>
+          <span className="text-ronke-banana/70">· state lives in your browser, no chain needed</span>
         </div>
         <button
           onClick={() => {
             if (confirm("Reset all demo progress?")) actions.reset();
           }}
-          className="rounded-lg border border-ronke-blue/30 px-3 py-1 text-xs text-ronke-blue/70 hover:bg-ronke-blue/10"
+          className="btn-secondary"
         >
           Reset demo
         </button>
@@ -295,7 +297,12 @@ export function DemoFarmDashboard() {
       {/* Plantations list */}
       <Card title="Your Plantations" emoji="🌱">
         {state.plantations.length === 0 ? (
-          <div className="text-sm text-ronke-blue/60">No Plantations yet. Buy one above to start.</div>
+          <div className="flex flex-col items-center gap-3 py-6 text-center">
+            <div className="text-5xl opacity-60">🌱</div>
+            <div className="text-sm text-ronke-blue/60">
+              No Plantations yet. Buy your first one above to start farming.
+            </div>
+          </div>
         ) : (
           <div className="space-y-3">
             {state.plantations.map((p) => {

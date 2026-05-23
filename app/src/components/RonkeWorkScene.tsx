@@ -35,7 +35,9 @@ export function RonkeWorkScene() {
   useEffect(() => {
     const t1 = setInterval(() => setTickerIdx((i) => (i + 1) % ACTIVITY_LINES.length), 2800);
     const t2 = setInterval(() => setSpeech1((i) => (i + 1) % SPEECH_LINES.length), 6000);
-    const t3 = setInterval(() => setSpeech2((i) => (i + 1) % SPEECH_LINES.length), 8400);
+    // Worker 4 starts at a different index and uses a different rotation speed
+    setSpeech2(3);
+    const t3 = setInterval(() => setSpeech2((i) => (i + 2) % SPEECH_LINES.length), 9200);
     return () => {
       clearInterval(t1);
       clearInterval(t2);

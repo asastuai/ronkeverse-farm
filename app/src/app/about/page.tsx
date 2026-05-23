@@ -20,7 +20,7 @@ export default function AboutPage() {
         <nav className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 sm:gap-3">
             <img src="/ronke.svg" alt="Ronke" className="h-8 w-8 sm:h-10 sm:w-10" />
-            <span className="text-xs font-semibold tracking-wide text-ronke-blue/80 sm:text-sm">
+            <span className="hidden text-xs font-semibold tracking-wide text-ronke-blue/80 sm:inline sm:text-sm">
               RONKEVERSE FARM
             </span>
           </Link>
