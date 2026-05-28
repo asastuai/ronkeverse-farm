@@ -18,6 +18,7 @@ const VIEWPORTS = {
 const PAGES = [
   { name: "home", path: "/" },
   { name: "about", path: "/about" },
+  { name: "battles", path: "/battles" },
 ];
 
 async function settle(page, ms = 1500) {

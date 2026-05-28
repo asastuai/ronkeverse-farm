@@ -19,7 +19,7 @@ saigon = "${SAIGON_RPC_URL}"
 
 [etherscan]
 ronin = { key = "${SOURCIFY_KEY}", url = "https://sourcify.roninchain.com/server", chain = 2020 }
-saigon = { key = "${SOURCIFY_KEY}", url = "https://sourcify.roninchain.com/server", chain = 2021 }
+saigon = { key = "${SOURCIFY_KEY}", url = "https://sourcify.roninchain.com/server", chain = 202601 }
 
 [fmt]
 line_length = 120

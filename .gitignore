@@ -17,7 +17,14 @@ app/build/
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
 !.env.example
+
+# build artifacts
+*.tsbuildinfo
+lcov.info
+contracts/lcov.info
 
 # logs
 *.log

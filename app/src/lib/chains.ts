@@ -13,7 +13,7 @@ export const ronin = defineChain({
 });
 
 export const saigon = defineChain({
-  id: 2021,
+  id: 202601,
   name: "Saigon Testnet",
   nativeCurrency: { name: "RON", symbol: "RON", decimals: 18 },
   rpcUrls: {

@@ -2,6 +2,7 @@
 
 import { useAccount, useReadContract } from "wagmi";
 import { ConnectButton } from "@/components/ConnectButton";
+import { ChainGuard } from "@/components/ChainGuard";
 import { RonkeCollage } from "@/components/RonkeCollage";
 import { RonkeWorkScene } from "@/components/RonkeWorkScene";
 import { FarmDashboard } from "@/components/farm/FarmDashboard";
@@ -10,6 +11,7 @@ import { contracts, erc20Abi, erc721Abi, isContractsDeployed } from "@/lib/contr
 import { activeChain } from "@/lib/chains";
 import { formatUnits } from "viem";
 
+// Demo mode is opt-in via env var. Defaults to false (real chain mode on Saigon).
 const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "true";
 
 export default function Home() {
@@ -67,6 +69,9 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
+            <a href="/battles" className="btn-primary">
+              ⚔️ Play
+            </a>
             <a href="/about" className="btn-secondary">
               About
             </a>
@@ -108,17 +113,24 @@ export default function Home() {
             </span>
           </p>
 
-          {!isConnected && !isDemoMode && (
-            <div className="reveal mt-2" style={{ animationDelay: "0.45s" }}>
-              <ConnectButton />
-            </div>
-          )}
+          <div className="reveal mt-2 flex flex-col items-center gap-3" style={{ animationDelay: "0.45s" }}>
+            <a href="/battles" className="btn-primary text-base">
+              ⚔️ Play Ronke Battles — live now
+            </a>
+            <span className="text-xs text-ronke-blue/50">
+              Stake RON or USDC · earn $NABABA · the farm comes later
+            </span>
+            {!isConnected && !isDemoMode && <ConnectButton />}
+          </div>
         </header>
 
         {/* RONKE WORK SCENE — circuito visual animado */}
         <section className="reveal" style={{ animationDelay: "0.55s" }}>
           <RonkeWorkScene />
         </section>
+
+        {/* Chain guard banner — shows if connected to wrong network */}
+        {!isDemoMode && <ChainGuard />}
 
         {/* stats (solo si conectado) */}
         {isConnected && (
