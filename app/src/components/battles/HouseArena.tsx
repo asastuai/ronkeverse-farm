@@ -139,8 +139,16 @@ export function HouseArena() {
         args: [tokenAddr, stakeWei, moves as never],
         value: currency === "RON" ? stakeWei : 0n,
       });
-      await publicClient!.waitForTransactionReceipt({ hash });
-      setMsg("✅ Played! The house reveals shortly — your result will settle on-chain. Winnings appear below.");
+      const receipt = await publicClient!.waitForTransactionReceipt({ hash });
+      // averiguar el gameId recién creado y pinguear al keeper para settle inmediato
+      const playedId = Number(await publicClient!.readContract({
+        abi: ronkeBattlesHouseAbi, address: contracts.ronkeBattlesHouse, functionName: "nextGameId",
+      })) - 1;
+      setMsg("🎲 Played! The house is revealing your result…");
+      fetch(`/api/keeper?gameId=${playedId}`).catch(() => {}); // best-effort; el cron es backstop
+      void receipt;
+      // dar unos segundos al settle y refrescar
+      setTimeout(refresh, 4000);
       refresh();
     } catch (e) {
       setMsg(`❌ ${friendlyError(e)}`);
