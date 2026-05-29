@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
   useBalance,
@@ -19,7 +19,8 @@ import {
   NATIVE_TOKEN,
 } from "@/lib/contracts";
 import { activeChain } from "@/lib/chains";
-import { CARDS, ROUNDS } from "@/lib/battles";
+import { CARDS, ROUNDS, roundWinner, saveReveal } from "@/lib/battles";
+import { keccak256, encodeAbiParameters } from "viem";
 
 const RON_TIERS = ["0.05", "0.1"] as const;
 const USDC_TIERS = ["1", "5"] as const;
@@ -40,6 +41,7 @@ export function HouseArena() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [nonce, setNonce] = useState(0);
+  const [lastPlayed, setLastPlayed] = useState<{ id: number; moves: number[] } | null>(null);
 
   const tokenAddr: Address = currency === "RON" ? NATIVE_TOKEN : contracts.testUsdc;
   const stakeWei = parseEther(tier);
@@ -144,10 +146,11 @@ export function HouseArena() {
       const playedId = Number(await publicClient!.readContract({
         abi: ronkeBattlesHouseAbi, address: contracts.ronkeBattlesHouse, functionName: "nextGameId",
       })) - 1;
+      void receipt;
+      saveReveal(playedId, moves, "0x" as never); // guardamos las jugadas para el reveal
+      setLastPlayed({ id: playedId, moves: [...moves] });
       setMsg("🎲 Played! The house is revealing your result…");
       fetch(`/api/keeper?gameId=${playedId}`).catch(() => {}); // best-effort; el cron es backstop
-      void receipt;
-      // dar unos segundos al settle y refrescar
       setTimeout(refresh, 4000);
       refresh();
     } catch (e) {
@@ -259,6 +262,14 @@ export function HouseArena() {
         <div className="rounded-xl border border-ronke-blue/20 bg-ronke-deep/60 p-3 text-sm text-ronke-blue/90">{msg}</div>
       )}
 
+      {lastPlayed && (
+        <ResultReveal
+          gameId={lastPlayed.id}
+          playerMoves={lastPlayed.moves}
+          onClose={() => setLastPlayed(null)}
+        />
+      )}
+
       <div>
         <div className="mb-3 flex items-center gap-3">
           <h3 className="font-display text-lg text-white/90">Your games</h3>
@@ -284,6 +295,100 @@ export function HouseArena() {
             ))}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Muestra el resultado de la partida vs casa cuando se settlea: tus cartas vs las de la casa,
+ * ronda por ronda, con el veredicto. Hace "sentir vivo" el juego.
+ * Deriva las cartas de la casa del seed revelado en la tx de settle (provably-fair verificable).
+ */
+function ResultReveal({ gameId, playerMoves, onClose }: { gameId: number; playerMoves: number[]; onClose: () => void }) {
+  const publicClient = usePublicClient();
+  const [houseMoves, setHouseMoves] = useState<number[] | null>(null);
+  const [resultText, setResultText] = useState<string>("Waiting for the house to reveal…");
+
+  const { data: game } = useReadContract({
+    abi: ronkeBattlesHouseAbi, address: contracts.ronkeBattlesHouse, functionName: "getGame",
+    args: [BigInt(gameId)], query: { refetchInterval: 3000 },
+  });
+  const status = game ? Number((game as unknown[])[4]) : 1;
+
+  useEffect(() => {
+    if (status !== 2 || houseMoves || !publicClient) return; // 2 = Settled
+    (async () => {
+      try {
+        const latest = await publicClient.getBlockNumber();
+        const fromBlock = latest > 5000n ? latest - 5000n : 0n;
+        const logs = await publicClient.getContractEvents({
+          address: contracts.ronkeBattlesHouse, abi: ronkeBattlesHouseAbi as never,
+          eventName: "Settled", args: { gameId: BigInt(gameId) }, fromBlock,
+        });
+        if (!logs.length) return;
+        const txHash = (logs[0] as { transactionHash: `0x${string}` }).transactionHash;
+        const tx = await publicClient.getTransaction({ hash: txHash });
+        // settle(uint256 gameId, bytes32 seed) → seed = últimos 32 bytes del calldata
+        const seed = ("0x" + tx.input.slice(-64)) as `0x${string}`;
+        const h = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "uint256" }], [seed, BigInt(gameId)]));
+        const hex = h.slice(2);
+        const hm = [];
+        for (let i = 0; i < 5; i++) hm.push(parseInt(hex.slice(i * 2, i * 2 + 2), 16) % 3);
+        setHouseMoves(hm);
+        let pw = 0, hw = 0;
+        for (let i = 0; i < 5; i++) { const r = roundWinner(playerMoves[i], hm[i]); if (r === 1) pw++; else if (r === 2) hw++; }
+        const result = Number((logs[0] as { args: { result: number } }).args.result);
+        setResultText(result === 1 ? `🎉 You won! (${pw}-${hw})` : result === 2 ? `😿 House won (${pw}-${hw})` : `🤝 Tie — refunded`);
+      } catch { /* best-effort reveal */ }
+    })();
+  }, [status, houseMoves, publicClient, gameId, playerMoves]);
+
+  const settled = status === 2;
+  return (
+    <div className="card border-ronke-banana/40 bg-ronke-banana/5 p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <span className="font-display text-base text-ronke-banana">Game #{gameId}</span>
+        <button onClick={onClose} className="text-xs text-ronke-blue/50 hover:text-white">dismiss ✕</button>
+      </div>
+      {!settled ? (
+        <div className="flex items-center gap-2 text-sm text-ronke-blue/70">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-ronke-banana" />
+          The house is revealing your cards…
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <div className="text-center text-lg font-bold text-white">{resultText}</div>
+          <div className="flex flex-col gap-1.5">
+            <CardRow label="You" moves={playerMoves} />
+            <CardRow label="House" moves={houseMoves ?? [-1, -1, -1, -1, -1]} other={playerMoves} isHouse />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CardRow({ label, moves, other, isHouse }: { label: string; moves: number[]; other?: number[]; isHouse?: boolean }) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="w-12 text-xs uppercase tracking-wide text-ronke-blue/50">{label}</span>
+      <div className="flex gap-1.5">
+        {moves.map((c, i) => {
+          let ring = "border-ronke-blue/20";
+          if (other && c >= 0) {
+            const r = isHouse ? roundWinner(other[i], c) : roundWinner(c, other[i]);
+            // para player: r===1 gana; para house mostramos verde si la casa gana esa ronda (r===2 desde perspectiva player)
+            const win = isHouse ? r === 2 : r === 1;
+            const lose = isHouse ? r === 1 : r === 2;
+            ring = win ? "border-green-400/70" : lose ? "border-red-400/40" : "border-ronke-blue/20";
+          }
+          return (
+            <div key={i} className={`flex h-11 w-11 items-center justify-center rounded-lg border-2 ${ring} bg-ronke-deep/60 text-xl`}>
+              {c >= 0 ? CARDS[c].emoji : "?"}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
