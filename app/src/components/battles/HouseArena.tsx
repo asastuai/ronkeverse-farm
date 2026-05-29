@@ -301,14 +301,15 @@ export function HouseArena() {
 }
 
 /**
- * Muestra el resultado de la partida vs casa cuando se settlea: tus cartas vs las de la casa,
- * ronda por ronda, con el veredicto. Hace "sentir vivo" el juego.
- * Deriva las cartas de la casa del seed revelado en la tx de settle (provably-fair verificable).
+ * Reveal turno por turno de la partida vs casa. Una vez settleada, deriva las cartas de la casa
+ * del seed revelado (provably-fair) y las muestra ronda a ronda en secuencia dentro de un recuadro,
+ * con el score corriendo y el veredicto final al cerrar. Hace "sentir vivo" el duelo.
  */
 function ResultReveal({ gameId, playerMoves, onClose }: { gameId: number; playerMoves: number[]; onClose: () => void }) {
   const publicClient = usePublicClient();
   const [houseMoves, setHouseMoves] = useState<number[] | null>(null);
-  const [resultText, setResultText] = useState<string>("Waiting for the house to reveal…");
+  const [result, setResult] = useState<number | null>(null); // 1 you / 2 house / 0 tie
+  const [shown, setShown] = useState(0); // rondas reveladas (0..5)
 
   const { data: game } = useReadContract({
     abi: ronkeBattlesHouseAbi, address: contracts.ronkeBattlesHouse, functionName: "getGame",
@@ -316,8 +317,9 @@ function ResultReveal({ gameId, playerMoves, onClose }: { gameId: number; player
   });
   const status = game ? Number((game as unknown[])[4]) : 1;
 
+  // 1) cuando settlea, traer el seed de la tx de settle y derivar las cartas de la casa
   useEffect(() => {
-    if (status !== 2 || houseMoves || !publicClient) return; // 2 = Settled
+    if (status !== 2 || houseMoves || !publicClient) return;
     (async () => {
       try {
         const latest = await publicClient.getBlockNumber();
@@ -329,67 +331,99 @@ function ResultReveal({ gameId, playerMoves, onClose }: { gameId: number; player
         if (!logs.length) return;
         const txHash = (logs[0] as { transactionHash: `0x${string}` }).transactionHash;
         const tx = await publicClient.getTransaction({ hash: txHash });
-        // settle(uint256 gameId, bytes32 seed) → seed = últimos 32 bytes del calldata
         const seed = ("0x" + tx.input.slice(-64)) as `0x${string}`;
         const h = keccak256(encodeAbiParameters([{ type: "bytes32" }, { type: "uint256" }], [seed, BigInt(gameId)]));
         const hex = h.slice(2);
-        const hm = [];
+        const hm: number[] = [];
         for (let i = 0; i < 5; i++) hm.push(parseInt(hex.slice(i * 2, i * 2 + 2), 16) % 3);
+        setResult(Number((logs[0] as { args: { result: number } }).args.result));
         setHouseMoves(hm);
-        let pw = 0, hw = 0;
-        for (let i = 0; i < 5; i++) { const r = roundWinner(playerMoves[i], hm[i]); if (r === 1) pw++; else if (r === 2) hw++; }
-        const result = Number((logs[0] as { args: { result: number } }).args.result);
-        setResultText(result === 1 ? `🎉 You won! (${pw}-${hw})` : result === 2 ? `😿 House won (${pw}-${hw})` : `🤝 Tie — refunded`);
-      } catch { /* best-effort reveal */ }
+      } catch { /* best-effort */ }
     })();
-  }, [status, houseMoves, publicClient, gameId, playerMoves]);
+  }, [status, houseMoves, publicClient, gameId]);
 
-  const settled = status === 2;
+  // 2) revelar las rondas en secuencia, una por una
+  useEffect(() => {
+    if (!houseMoves || shown >= ROUNDS) return;
+    const t = setTimeout(() => setShown((s) => s + 1), shown === 0 ? 350 : 950);
+    return () => clearTimeout(t);
+  }, [houseMoves, shown]);
+
+  // score corriendo sobre las rondas ya reveladas
+  let pw = 0, hw = 0;
+  if (houseMoves) {
+    for (let i = 0; i < shown; i++) {
+      const r = roundWinner(playerMoves[i], houseMoves[i]);
+      if (r === 1) pw++; else if (r === 2) hw++;
+    }
+  }
+  const done = shown >= ROUNDS;
+  const verdict = result === 1 ? "🎉 You won!" : result === 2 ? "😿 House won" : "🤝 Tie — refunded";
+
   return (
     <div className="card border-ronke-banana/40 bg-ronke-banana/5 p-5">
       <div className="mb-3 flex items-center justify-between">
-        <span className="font-display text-base text-ronke-banana">Game #{gameId}</span>
+        <span className="font-display text-base text-ronke-banana">Game #{gameId} · the duel</span>
         <button onClick={onClose} className="text-xs text-ronke-blue/50 hover:text-white">dismiss ✕</button>
       </div>
-      {!settled ? (
-        <div className="flex items-center gap-2 text-sm text-ronke-blue/70">
+
+      {status !== 2 || !houseMoves ? (
+        <div className="flex items-center gap-2 py-3 text-sm text-ronke-blue/70">
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-ronke-banana" />
           The house is revealing your cards…
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          <div className="text-center text-lg font-bold text-white">{resultText}</div>
-          <div className="flex flex-col gap-1.5">
-            <CardRow label="You" moves={playerMoves} />
-            <CardRow label="House" moves={houseMoves ?? [-1, -1, -1, -1, -1]} other={playerMoves} isHouse />
+          {/* recuadro de la secuencia ronda por ronda */}
+          <div className="rounded-xl border border-ronke-blue/15 bg-ronke-deep/50 p-3">
+            <div className="mb-2 flex items-center justify-between text-[11px] uppercase tracking-wide text-ronke-blue/40">
+              <span>You</span><span>Round</span><span>House</span>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {Array.from({ length: ROUNDS }).map((_, i) => {
+                const revealed = i < shown;
+                const r = revealed ? roundWinner(playerMoves[i], houseMoves[i]) : -1;
+                return (
+                  <div
+                    key={i}
+                    className={`flex items-center justify-between rounded-lg px-2 py-1.5 transition-all duration-300 ${
+                      revealed ? "bg-ronke-deep/60 opacity-100" : "opacity-30"
+                    } ${r === 1 ? "ring-1 ring-green-400/50" : r === 2 ? "ring-1 ring-red-400/40" : ""}`}
+                  >
+                    <Card c={revealed ? playerMoves[i] : -1} highlight={r === 1} />
+                    <span className="text-[11px] font-semibold text-ronke-blue/50">
+                      {revealed ? (r === 1 ? "◀ win" : r === 2 ? "lose ▶" : "tie") : `R${i + 1}`}
+                    </span>
+                    <Card c={revealed ? houseMoves[i] : -1} highlight={r === 2} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
+
+          {/* score corriendo */}
+          <div className="flex items-center justify-center gap-3 text-sm">
+            <span className="font-bold text-white">You {pw}</span>
+            <span className="text-ronke-blue/40">—</span>
+            <span className="font-bold text-white">{hw} House</span>
+          </div>
+
+          {/* veredicto al terminar la secuencia */}
+          {done && result !== null && (
+            <div className="reveal text-center text-lg font-bold text-ronke-banana">{verdict}</div>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function CardRow({ label, moves, other, isHouse }: { label: string; moves: number[]; other?: number[]; isHouse?: boolean }) {
+function Card({ c, highlight }: { c: number; highlight?: boolean }) {
   return (
-    <div className="flex items-center gap-2">
-      <span className="w-12 text-xs uppercase tracking-wide text-ronke-blue/50">{label}</span>
-      <div className="flex gap-1.5">
-        {moves.map((c, i) => {
-          let ring = "border-ronke-blue/20";
-          if (other && c >= 0) {
-            const r = isHouse ? roundWinner(other[i], c) : roundWinner(c, other[i]);
-            // para player: r===1 gana; para house mostramos verde si la casa gana esa ronda (r===2 desde perspectiva player)
-            const win = isHouse ? r === 2 : r === 1;
-            const lose = isHouse ? r === 1 : r === 2;
-            ring = win ? "border-green-400/70" : lose ? "border-red-400/40" : "border-ronke-blue/20";
-          }
-          return (
-            <div key={i} className={`flex h-11 w-11 items-center justify-center rounded-lg border-2 ${ring} bg-ronke-deep/60 text-xl`}>
-              {c >= 0 ? CARDS[c].emoji : "?"}
-            </div>
-          );
-        })}
-      </div>
+    <div className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 bg-ronke-deep/70 text-2xl transition ${
+      highlight ? "border-green-400/70 scale-105" : "border-ronke-blue/20"
+    }`}>
+      {c >= 0 ? CARDS[c].emoji : "?"}
     </div>
   );
 }
